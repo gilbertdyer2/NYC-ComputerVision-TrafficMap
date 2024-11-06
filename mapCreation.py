@@ -7,8 +7,8 @@ import os
 import sys
 import base64
 
-from IPython.display import HTML, display
 
+# For running as executable with PyInstaller
 # ----- FILE SETTINGS ----- #
 def get_base_filepath():
     if getattr(sys, 'frozen', False):
@@ -17,6 +17,7 @@ def get_base_filepath():
     else:
         print("Detected ran from local")
         return ''
+    
 
 # ----- DEFINITIONS ---- #
 BASE_FILEPATH = get_base_filepath()
@@ -68,9 +69,6 @@ def get_popup(sorted_df, index : int, local_HTML : bool = False):
 
 # Gets the icon of a camera, assigns it a color based on car count
 def get_icon(car_count : int):
-    # df = pd.read_csv(os.path.join(BASE_FILEPATH, 'out.csv'))
-    # car_count = df.loc[camera_num].at['car_count']
-
     # Get color of icon, red > yellow > green for car density
     return folium.Icon(get_color(car_count))
 
@@ -78,7 +76,6 @@ def get_icon(car_count : int):
 # Returns a transparent circle to be placed around a camera location
 # - The returned color indicates the amount of traffic 
 def get_circle(sorted_df, index : int):
-    # df = pd.read_csv(os.path.join(BASE_FILEPATH, 'out.csv'))
     car_count = sorted_df.iloc[index].at['car_count']
 
     color = get_color(car_count)
@@ -170,13 +167,6 @@ def update_map_html():
         popup = get_popup(sorted_df, i)
         # Get the color of the icon (changes based on car count at camera location)
         icon = folium.Icon(get_color(car_count))
-        
-        # Create pin camera marker with size matching zoom
-        # camera_marker = folium.Marker(
-        #     location = [sorted_df.loc[i].at['latitude'], sorted_df.loc[i].at['longitude']],
-        #     popup = popup,
-        #     icon = icon
-        # )
 
         # Create circular camera marker with constant size on the map
         camera_marker = folium.Circle(
@@ -195,7 +185,6 @@ def update_map_html():
         # Add created markers 
         camera_markers.add_child(camera_marker)
         circle_markers.add_child(circle_marker)
-        # print(f"Adding car ct: {car_count}")
 
         # Enable to use with Borough marker cluster regions
         # Adds the markers to its respective borough group, defined by the BOROUGHS dictionary

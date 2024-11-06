@@ -3,6 +3,9 @@ import pandas as pd
 import requests
 import numpy as np
 import sys, os
+
+
+# For running as executable with PyInstaller
 # ----- FILEPATH DEFS ----- # 
 def get_base_filepath():
     if getattr(sys, 'frozen', False):
@@ -11,7 +14,10 @@ def get_base_filepath():
         print("Using base_filepath: ''")
         return ''
 
+
+# ----- DEFINITIONS ---- #
 BASE_FILEPATH = get_base_filepath()
+
 
 # Runs specified image through opencv and displays cars found with red bounding boxes
 def find_cars(df, i : int, confirm_picture : bool):
@@ -25,8 +31,10 @@ def find_cars(df, i : int, confirm_picture : bool):
     if image is None:
         return 0
 
+
+    # Image treatment 
     image = cv2.resize(image, (1000, 600))
-    cropped = image[100:600, 0:1000]
+    cropped = image[100:600, 0:1000] # Cut off black bar from top of image
     gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
     dilated = cv2.dilate(blur, np.ones((3, 3)))
@@ -57,6 +65,7 @@ def find_cars(df, i : int, confirm_picture : bool):
     return car_count
 
 
+# saves all images of cameras stored in out.csv
 def save_images():
     print("Saving images...")
     df = pd.read_csv(os.path.join(BASE_FILEPATH, 'out.csv'))
@@ -80,6 +89,7 @@ def save_images():
     print("Finished saving images...")
 
 
+# edits the csv file to include a car count parameter
 def update_car_count():
     print("Updating car count...")
 
@@ -102,31 +112,3 @@ def update_csv():
     r = requests.get(url)
     new_df = pd.DataFrame(r.json())
     new_df.to_csv(os.path.join(BASE_FILEPATH, 'out.csv'), index=False, float_format='%.6f')
-
-
-'''
-Tested OpenCV Params:
-
-Good Test Candidates:
-    Ideal Scenarios:
-    123 - (22 cars found), ideal highway
-    119 - (13), nearly perfect, only 1 double detect on a truck
-    57 - (22), ideal highway, got all cars, but ~5 false positives on building above
-    
-    Control:
-    52 - (0), Pole in way, blurry camera
-    
-    False positives:
-    139 - (10), Highway View, Detects a fence as 9 cars 
-    12 - (17), Suburban 4-way intersection, 16 false positives, 6 being a sidewalk
-    16 - (12), NYC Street, 6 false positives along crosswalk
-
-    Found candidates for OpenCV Params: 
-    1. Use cropped as inp for multidetect, 1.1, 3, minSize = [20,20]
-    2. Use cropped as inp, 1.04, 6, minSize = [20,20]
-        - Maybe use 3-4 neighbors, but fence example gets bad w/ low vals
-
-    3. (Currently Used) closing as inp, 1.04, 6, minSize = [20, 20])
-        - Seems to work better for night time, although introduces more false positives,
-        probably due to the post-processing and blur applied mixed with the low resolution
-'''
