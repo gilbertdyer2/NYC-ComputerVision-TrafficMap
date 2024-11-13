@@ -1,6 +1,6 @@
 # NYC Traffic Map 
 
-An interactive traffic map utilizing NYCDOT Traffic Management Center's traffic camera API and [vehicle detection with Haar Cascades](https://github.com/andrewssobral/vehicle_detection_haarcascades/tree/master) with OpenCV, built with Folium's python library.
+An interactive traffic map utilizing NYCDOT Traffic Management Center's traffic camera API and [vehicle detection with Haar Cascades](https://github.com/andrewssobral/vehicle_detection_haarcascades/tree/master) and OpenCV, built with Folium's python library.
 
 A live version of the map can be found [here](https://gibbermusic.com/projects/) on my personal website, which is set to update around every hour or so. Clicking on a region will display the largest car count found with a preview of the camera and bounding boxes 
 
